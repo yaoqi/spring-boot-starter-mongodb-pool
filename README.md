@@ -109,7 +109,9 @@ spring.data.mongodb.testMongoTemplate.password=123456
 spring.data.mongodb.testMongoTemplate.database=backup
 spring.data.mongodb.testMongoTemplate.showClass=false
 ```
+
 Uri配置方式:
+```
 spring.data.mongodb.testMongoTemplate.uri=mongodb://dean:dean001@localhost:3717,localhost:3718/admin?replicaSet=rs001
 spring.data.mongodb.testMongoTemplate.repositories.type=auto
 ```
