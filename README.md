@@ -64,22 +64,14 @@ private MongoTemplate seaweedMongoTemplate;
 - 可以配置多个数据源
 - 支持连接池参数配置
 - 支持去掉_class的配置
+- **支持uri配置连接池信息
 
 ## 不支持的功能
 
 - 多数据源配置后不支持Repository接口方式的使用
-- 不支持uri配置连接池信息
 
-## 仓库地址
-
-```
-<repositories>
-	<repository>
-		<id>jitpack.io</id>
-		<url>https://www.jitpack.io</url>
-	</repository>
-</repositories>
-```
+## 编译
+git clone 后, mvn clean install到本地仓库，或upload到nexus私服。
 
 ## Maven依赖
 
@@ -190,7 +182,3 @@ public class MongoPoolProperties {
 - 尹吉欢 1304489315@qq.com
 - 博客 http://cxytiandi.com/blogs/yinjihuan
 - Spring Data Mongodb技术交流群：544478648
-
-更多技术分享请关注微信公众号：猿天地
-
-![image.png](http://upload-images.jianshu.io/upload_images/2685774-da01a73d0cfc3f35.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
