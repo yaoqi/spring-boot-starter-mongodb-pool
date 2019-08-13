@@ -109,6 +109,10 @@ spring.data.mongodb.testMongoTemplate.password=123456
 spring.data.mongodb.testMongoTemplate.database=backup
 spring.data.mongodb.testMongoTemplate.showClass=false
 ```
+Uri配置方式:
+spring.data.mongodb.testMongoTemplate.uri=mongodb://dean:dean001@localhost:3717,localhost:3718/admin?replicaSet=rs001
+spring.data.mongodb.testMongoTemplate.repositories.type=auto
+```
 
 testMongoTemplate和logsMongoTemplate就是每个数据源对应的MongoTemplate
 
@@ -180,5 +184,5 @@ public class MongoPoolProperties {
 
 # 作者
 - 尹吉欢 1304489315@qq.com
-- 博客 http://cxytiandi.com/blogs/yinjihuan
-- Spring Data Mongodb技术交流群：544478648
+
+# Uri配置支持by Dean
