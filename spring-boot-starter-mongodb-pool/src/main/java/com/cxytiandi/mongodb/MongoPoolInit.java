@@ -14,6 +14,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
+import org.springframework.boot.autoconfigure.mongo.MongoClientFactory;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.AnnotationConfigUtils;
@@ -47,9 +48,11 @@ import com.mongodb.ServerAddress;
 @Component
 public class MongoPoolInit implements BeanDefinitionRegistryPostProcessor, EnvironmentAware {
 
-	private List<MongoPoolProperties> pools = new ArrayList<MongoPoolProperties>();
+	private List<MongoPropertiesEx> pools = new ArrayList<MongoPropertiesEx>();
 
 	private ScopeMetadataResolver scopeMetadataResolver = new AnnotationScopeMetadataResolver();
+
+	private Environment environment;
 
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 
@@ -57,35 +60,13 @@ public class MongoPoolInit implements BeanDefinitionRegistryPostProcessor, Envir
 
 	public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
 		int index = 0;
-		for (MongoPoolProperties properties : pools) {
+		for (MongoPropertiesEx properties : pools) {
 			MongoClientOptions options = buildMongoOptions(properties);
-			List<ServerAddress> seeds = null;
-			// 优选选择URI构造链接
-			if (StringUtils.hasText(properties.getUri())) {
-				seeds = new ArrayList<ServerAddress>();
-				String[] uris = properties.getUri().split(",");
-				for (String u : uris) {
-					String[] us = u.split(":");
-					seeds.add(new ServerAddress(us[0], Integer.parseInt(us[1])));
-				}
-			} else {
-				seeds = Arrays.asList(new ServerAddress(properties.getHost(), properties.getPort()));
-			}
-			
-			MongoClient mongoClient = null;
-			// 认证信息
-			if (StringUtils.hasText(properties.getUsername()) && 
-					StringUtils.hasText(properties.getAuthenticationDatabase()) && properties.getPassword() != null) {
-				MongoCredential cre = MongoCredential.createCredential(properties.getUsername(), properties.getAuthenticationDatabase(), 
-						properties.getPassword());
-				mongoClient = new MongoClient(seeds, cre, options);
-			} else {
-				mongoClient = new MongoClient(seeds, options);
-			}
-			
+			MongoClientFactory factory = new MongoClientFactory(properties, environment);
+			MongoClient mongoClient = factory.createMongoClient(options);
 			SimpleMongoDbFactory mongoDbFactory = null;
-			if (StringUtils.hasText(properties.getDatabase())) {
-				mongoDbFactory = new SimpleMongoDbFactory(mongoClient, properties.getDatabase());
+			if (StringUtils.hasText(properties.getMongoClientDatabase())) {
+				mongoDbFactory = new SimpleMongoDbFactory(mongoClient, properties.getMongoClientDatabase());
 			} else {
 				mongoDbFactory = new SimpleMongoDbFactory(mongoClient, properties.getGridFsDatabase());
 			}
@@ -103,7 +84,7 @@ public class MongoPoolInit implements BeanDefinitionRegistryPostProcessor, Envir
 
 	}
 	
-	private void registryGridFsTemplate(BeanDefinitionRegistry registry, boolean primary, MongoPoolProperties properties,
+	private void registryGridFsTemplate(BeanDefinitionRegistry registry, boolean primary, MongoPropertiesEx properties,
 			SimpleMongoDbFactory mongoDbFactory, MappingMongoConverter converter) {
 		AnnotatedGenericBeanDefinition abd = new AnnotatedGenericBeanDefinition(GridFsTemplate.class);
 		ScopeMetadata scopeMetadata = this.scopeMetadataResolver.resolveScopeMetadata(abd);
@@ -116,7 +97,7 @@ public class MongoPoolInit implements BeanDefinitionRegistryPostProcessor, Envir
 		BeanDefinitionReaderUtils.registerBeanDefinition(definitionHolder, registry);
 	}
 
-	private void registryMongoTemplate(BeanDefinitionRegistry registry, boolean primary, MongoPoolProperties properties,
+	private void registryMongoTemplate(BeanDefinitionRegistry registry, boolean primary, MongoPropertiesEx properties,
 			SimpleMongoDbFactory mongoDbFactory, MappingMongoConverter converter) {
 		AnnotatedGenericBeanDefinition abd = new AnnotatedGenericBeanDefinition(MongoTemplate.class);
 		ScopeMetadata scopeMetadata = this.scopeMetadataResolver.resolveScopeMetadata(abd);
@@ -139,7 +120,7 @@ public class MongoPoolInit implements BeanDefinitionRegistryPostProcessor, Envir
 		return converter;
 	}
 
-	private MongoClientOptions buildMongoOptions(MongoPoolProperties properties) {
+	private MongoClientOptions buildMongoOptions(MongoPropertiesEx properties) {
 		MongoClientOptions options = new MongoClientOptions.Builder()
 				.applicationName(properties.getApplicationName())
 				.connectionsPerHost(properties.getMaxConnectionsPerHost())
@@ -163,6 +144,8 @@ public class MongoPoolInit implements BeanDefinitionRegistryPostProcessor, Envir
 	}
 
 	public void setEnvironment(Environment environment) {
+		this.environment = environment;
+		
 		// 初始化配置信息到对象的映射
 		Map<String, Object> map = Binder.get(environment).bind("spring.data.mongodb", Map.class).get();
 		Set<String> mongoTemplateNames = new TreeSet<String>();
@@ -174,13 +157,13 @@ public class MongoPoolInit implements BeanDefinitionRegistryPostProcessor, Envir
 		}
 
 		for (String name : mongoTemplateNames) {
-			MongoPoolProperties pro = new MongoPoolProperties();
+			MongoPropertiesEx pro = new MongoPropertiesEx();
 			buildProperties((Map)map.get(name), name, pro);
 			pools.add(pro);
 		}
 	}
 
-	private void buildProperties(Map<String, Object> map, String name, MongoPoolProperties pro) {
+	private void buildProperties(Map<String, Object> map, String name, MongoPropertiesEx pro) {
 		pro.setUri(formatStringValue(map, PoolAttributeTag.URI, ""));
 		pro.setShowClass(formatBoolValue(map, PoolAttributeTag.SHOW_CLASS, true));
 		pro.setMongoTemplateName(name);
