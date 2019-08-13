@@ -132,9 +132,9 @@ private MongoTemplate testMongoTemplate;
 private MongoTemplate logsMongoTemplate;
 ```
 
-完整的使用案列请参考：https://github.com/yinjihuan/spring-boot-starter-mongodb-pool/tree/master/spring-boot-starter-mongodb-pool-example
+完整的使用案列请参考：https://github.com/yaoqi/spring-boot-starter-mongodb-pool/tree/master/spring-boot-starter-mongodb-pool-example
 
-完整的属性配置请参考：https://github.com/yinjihuan/spring-boot-starter-mongodb-pool/blob/master/spring-boot-starter-mongodb-pool/src/main/java/com/cxytiandi/mongodb/MongoPoolProperties.java
+完整的属性配置请参考：https://github.com/yaoqi/spring-boot-starter-mongodb-pool/blob/master/spring-boot-starter-mongodb-pool/src/main/java/com/cxytiandi/mongodb/MongoPropertiesEx.java
 
 ```
 @Data
