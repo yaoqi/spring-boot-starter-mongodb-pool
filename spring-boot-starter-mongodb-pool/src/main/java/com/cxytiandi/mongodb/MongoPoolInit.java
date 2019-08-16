@@ -168,13 +168,13 @@ public class MongoPoolInit implements BeanDefinitionRegistryPostProcessor, Envir
 		pro.setShowClass(formatBoolValue(map, PoolAttributeTag.SHOW_CLASS, true));
 		pro.setMongoTemplateName(name);
 		pro.setGridFsTemplateName(formatStringValue(map, PoolAttributeTag.GRID_FS_TEMPLATE_NAME, name + "GridFsTemplate"));
-		pro.setHost(formatStringValue(map, PoolAttributeTag.HOST, "localhost"));
-		pro.setPort(formatIntValue(map, PoolAttributeTag.PORT, 27017));
-		pro.setDatabase(formatStringValue(map, PoolAttributeTag.DATABASE, "test"));
-		pro.setAuthenticationDatabase(formatStringValue(map, PoolAttributeTag.AUTH_DATABASE, "admin"));
-		pro.setGridFsDatabase(formatStringValue(map, PoolAttributeTag.GRIDFS_DATABASE, "test"));
-		pro.setUsername(formatStringValue(map, PoolAttributeTag.USERNAME, null));
-		pro.setPassword(formatChatValue(map, PoolAttributeTag.PASSWORD));
+		//pro.setHost(formatStringValue(map, PoolAttributeTag.HOST, "localhost"));
+		//pro.setPort(formatIntValue(map, PoolAttributeTag.PORT, 27017));
+		//pro.setDatabase(formatStringValue(map, PoolAttributeTag.DATABASE, "test"));
+		//pro.setAuthenticationDatabase(formatStringValue(map, PoolAttributeTag.AUTH_DATABASE, "admin"));
+		//pro.setGridFsDatabase(formatStringValue(map, PoolAttributeTag.GRIDFS_DATABASE, "test"));
+		//pro.setUsername(formatStringValue(map, PoolAttributeTag.USERNAME, null));
+		//pro.setPassword(formatChatValue(map, PoolAttributeTag.PASSWORD));
 		pro.setApplicationName(formatStringValue(map, PoolAttributeTag.APPLICATIONNAME, null));
 		
 		pro.setMinConnectionsPerHost(formatIntValue(map, PoolAttributeTag.MIN_CONN_PERHOST, 0));
